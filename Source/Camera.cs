@@ -88,6 +88,12 @@ namespace CameraBuddy
 		public Rectangle WorldBoundary { get; set; }
 
 		/// <summary>
+		/// This is a flag that can be used if your game doesn't have a world boundary
+		/// </summary>
+		/// <value><c>true</c> if ignore world boundary; otherwise, <c>false</c>.</value>
+		public bool IgnoreWorldBoundary { get; private set; }
+
+		/// <summary>
 		/// translation matrix for the camera
 		/// </summary>
 		public Matrix TranslationMatrix { get; private set; }
@@ -106,7 +112,10 @@ namespace CameraBuddy
 
 		#region Methods
 
-		public Camera(Rectangle rScreen, Rectangle rTitleSafeArea)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CameraBuddy.Camera"/> class.
+		/// </summary>
+		public Camera()
 		{
 			Scale = 1.0f;
 			m_fPrevScale = 1.0f;
@@ -126,8 +135,20 @@ namespace CameraBuddy
 			m_ShakeTimer = new GameClock();
 			m_fShakeTimeDelta = 0.0f;
 			WorldBoundary = new Rectangle(0, 0, 0, 0);
+			IgnoreWorldBoundary = false;
 
 			TranslationMatrix = Matrix.Identity;
+			TitleSafeArea = new Rectangle();
+			ScreenRect = new Rectangle();
+		}
+
+		/// <summary>
+		/// Sets the screen rects.
+		/// </summary>
+		/// <param name="rScreen">R screen.</param>
+		/// <param name="rTitleSafeArea">R title safe area.</param>
+		public void SetScreenRects(Rectangle rScreen, Rectangle rTitleSafeArea)
+		{
 			TitleSafeArea = rTitleSafeArea;
 			ScreenRect = rScreen;
 		}
@@ -267,25 +288,38 @@ namespace CameraBuddy
 				m_fBottom += fShakeY;
 			}
 
-			//hold all points inside the game world!
-			if (m_fTop < WorldBoundary.Top)
+			//Constrain the camera to stay in teh game world... or dont.
+			if (!IgnoreWorldBoundary)
 			{
-				m_fTop = WorldBoundary.Top;
-			}
+				//hold all points inside the game world!
+				if (m_fTop < WorldBoundary.Top)
+				{
+					m_fTop = WorldBoundary.Top;
+				}
 			
-			if (m_fBottom > WorldBoundary.Bottom)
-			{
-				m_fBottom = WorldBoundary.Bottom;
-			}
+				if (m_fBottom > WorldBoundary.Bottom)
+				{
+					m_fBottom = WorldBoundary.Bottom;
+				}
 
-			if (m_fLeft < WorldBoundary.Left)
-			{
-				m_fLeft = WorldBoundary.Left;
-			}
+				if (m_fLeft < WorldBoundary.Left)
+				{
+					m_fLeft = WorldBoundary.Left;
+				}
 
-			if (m_fRight > WorldBoundary.Right)
+				if (m_fRight > WorldBoundary.Right)
+				{
+					m_fRight = WorldBoundary.Right;
+				}
+			}
+			else
 			{
-				m_fRight = WorldBoundary.Right;
+				//Let the camera roam around wherever it wants
+				WorldBoundary = new Rectangle(
+					(int)m_fLeft, 
+					(int)m_fTop, 
+					(int)(m_fRight - m_fLeft), 
+					(int)(m_fBottom - m_fTop));
 			}
 
 			//check if we need to zoom to fit either horizontal or vertical
