@@ -511,6 +511,14 @@ namespace CameraBuddy
 			m_fShakeTimeDelta = fTimeDelta;
 		}
 
+		/// <summary>
+		/// Forces to screen.  Same as doing BeginScene(true)
+		/// </summary>
+		public void ForceToScreen()
+		{
+			BeginScene(true);
+		}
+
 //		public void DrawCameraInfo(IRenderer rRenderer)
 //		{
 //			//draw the center point
