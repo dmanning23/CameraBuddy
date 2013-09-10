@@ -67,9 +67,17 @@ namespace CameraBuddy
 		#region Properties
 
 		/// <summary>
-		/// teh position to use as the camera origin
+		/// teh position to use as the camera center
 		/// </summary>
-		private Vector2 Origin;
+		private Vector2 m_Origin;
+
+		public Vector2 Origin
+		{
+			get
+			{
+				return m_Origin;
+			}
+		}
 
 		/// <summary>
 		/// The amount to scale the rendering
@@ -119,7 +127,7 @@ namespace CameraBuddy
 		{
 			Scale = 1.0f;
 			m_fPrevScale = 1.0f;
-			Origin = Vector2.Zero;
+			m_Origin = Vector2.Zero;
 
 			m_fPrevLeft = 0.0f;
 			m_fPrevRight = 0.0f;
@@ -220,8 +228,8 @@ namespace CameraBuddy
 
 			//setup the translation matrix
 			Vector2 translationVect = new Vector2(
-				(TitleSafeArea.Width / 2.0f) - (Scale * Origin.X),
-				(TitleSafeArea.Height / 2.0f) - (Scale * Origin.Y));
+				(TitleSafeArea.Width / 2.0f) - (Scale * m_Origin.X),
+				(TitleSafeArea.Height / 2.0f) - (Scale * m_Origin.Y));
 			TranslationMatrix = Matrix.CreateTranslation(translationVect.X, translationVect.Y, 0.0f);
 
 			TranslationMatrix = Matrix.Multiply(ScaleMatrix, TranslationMatrix);
@@ -472,8 +480,8 @@ namespace CameraBuddy
 			m_fPrevScale = Scale;
 
 			//set teh camer position to be the center of the desired rectangle;
-			Origin.X = ((m_fLeft + m_fRight) / 2.0f) - (TitleSafeArea.Left / Scale);
-			Origin.Y = ((m_fTop + m_fBottom) / 2.0f) - (TitleSafeArea.Top / Scale);
+			m_Origin.X = ((m_fLeft + m_fRight) / 2.0f) - (TitleSafeArea.Left / Scale);
+			m_Origin.Y = ((m_fTop + m_fBottom) / 2.0f) - (TitleSafeArea.Top / Scale);
 
 			if (m_ShakeTimer.CurrentTime < m_fShakeTimeDelta)
 			{
@@ -518,12 +526,6 @@ namespace CameraBuddy
 		{
 			BeginScene(true);
 		}
-
-//		public void DrawCameraInfo(IRenderer rRenderer)
-//		{
-//			//draw the center point
-//			rRenderer.DrawPoint(m_Origin, Color.Red);
-//		}
 
 		#endregion //Methods
 	}
