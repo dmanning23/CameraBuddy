@@ -99,7 +99,7 @@ namespace CameraBuddy
 		/// This is a flag that can be used if your game doesn't have a world boundary
 		/// </summary>
 		/// <value><c>true</c> if ignore world boundary; otherwise, <c>false</c>.</value>
-		public bool IgnoreWorldBoundary { get; private set; }
+		public bool IgnoreWorldBoundary { get; set; }
 
 		/// <summary>
 		/// translation matrix for the camera
