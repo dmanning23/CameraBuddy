@@ -58,9 +58,9 @@ namespace CameraBuddy
 		/// <summary>
 		/// how fast the camera can pan
 		/// </summary>
-		private const float g_CAMERA_SPEED = 4.5f;
+		private const float g_CAMERA_SPEED = 10.0f;
 
-		private const float g_ScaleSpeed = 16.0f;
+		private const float g_ScaleSpeed = 20.0f;
 
 		#endregion //Members
 
@@ -365,7 +365,7 @@ namespace CameraBuddy
 				bool bOffRightWall = fAdjustedRight > WorldBoundary.Right;
 				bool bOffLeftWall = fAdjustedLeft < WorldBoundary.Left;
 
-				if (!bOffRightWall && !bOffLeftWall)
+				if (IgnoreWorldBoundary || (!bOffRightWall && !bOffLeftWall))
 				{
 					//those new limits are fine!
 					m_fRight = fAdjustedRight;
@@ -423,7 +423,7 @@ namespace CameraBuddy
 				bool bOffBottomWall = fAdjustedBottom > WorldBoundary.Bottom;
 				bool bOffCeilingWall = fAdjustedCeiling < WorldBoundary.Top;
 
-				if (!bOffBottomWall && !bOffCeilingWall)
+				if (IgnoreWorldBoundary || (!bOffBottomWall && !bOffCeilingWall))
 				{
 					//those new limits are fine!
 					m_fTop = fAdjustedCeiling;
