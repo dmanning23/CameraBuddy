@@ -116,6 +116,11 @@ namespace CameraBuddy
 		/// </summary>
 		public Rectangle ScreenRect { private get; set; }
 
+		public float Left { get { return m_fLeft; } }
+		public float Right { get { return m_fRight; } }
+		public float Top { get { return m_fTop; } }
+		public float Bottom { get { return m_fBottom; } }
+
 		#endregion //Properties
 
 		#region Methods
