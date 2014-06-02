@@ -40,8 +40,15 @@ namespace CameraBuddy
 		/// </summary>
 		GameClock m_ShakeTimer;
 
-		//the amount of time to shake the camera
+		/// <summary>
+		/// the amount of time to shake the camera
+		/// </summary>
 		private float m_fShakeTimeDelta;// = 0.25f;
+
+		/// <summary>
+		/// How hard to shake the camera.  1.0f for normal amount
+		/// </summary>
+		public float ShakeAmount { get; set; }
 
 		/// <summary>
 		/// the amount to zoom during a camera shake
@@ -121,6 +128,22 @@ namespace CameraBuddy
 		public float Top { get { return m_fTop; } }
 		public float Bottom { get { return m_fBottom; } }
 
+		private float ShakeZoom
+		{
+			get
+			{
+				return g_CAMERA_SHAKE_ZOOM * ShakeAmount;
+			}
+		}
+
+		private float ShakeRotate
+		{
+			get
+			{
+				return g_CAMERA_SHAKE_ROTATE * ShakeAmount;
+			}
+		}
+
 		#endregion //Properties
 
 		#region Methods
@@ -149,6 +172,7 @@ namespace CameraBuddy
 			m_fShakeTimeDelta = 0.0f;
 			WorldBoundary = new Rectangle(0, 0, 0, 0);
 			IgnoreWorldBoundary = false;
+			ShakeAmount = 1.0f;
 
 			TranslationMatrix = Matrix.Identity;
 			TitleSafeArea = new Rectangle();
@@ -282,12 +306,12 @@ namespace CameraBuddy
 			if (m_ShakeTimer.CurrentTime < m_fShakeTimeDelta)
 			{
 				//figure out the proper rotation for the camera shake
-				float fShakeX = (g_CAMERA_SHAKE_ROTATE *
+				float fShakeX = (ShakeRotate *
 					(float)Math.Sin(
 					((m_ShakeTimer.CurrentTime * (2.0f * Math.PI)) /
 					m_fShakeTimeDelta)));
 
-				float fShakeY = (g_CAMERA_SHAKE_ROTATE *
+				float fShakeY = (ShakeRotate *
 					(float)Math.Cos(
 					((m_ShakeTimer.CurrentTime * (2.0f * Math.PI)) /
 					m_fShakeTimeDelta)));
@@ -505,7 +529,7 @@ namespace CameraBuddy
 				*/
 
 				//figure how much camera shake to add to the zoom
-				float fShakeZoom = ((Scale * g_CAMERA_SHAKE_ZOOM) *
+				float fShakeZoom = ((Scale * ShakeZoom) *
 					(float)Math.Sin(
 					((m_ShakeTimer.CurrentTime * Math.PI) /
 					m_fShakeTimeDelta)));
@@ -517,11 +541,12 @@ namespace CameraBuddy
 		/// add some camera shaking!
 		/// </summary>
 		/// <param name="fTimeDelta">how long to shake the camera</param>
-		public void AddCameraShake(float fTimeDelta)
+		public void AddCameraShake(float fTimeDelta, float amount = 1.0f)
 		{
 			m_ShakeTimer.Start();
 			m_bShakeLeft = !m_bShakeLeft;
 			m_fShakeTimeDelta = fTimeDelta;
+			ShakeAmount = amount;
 		}
 
 		/// <summary>
