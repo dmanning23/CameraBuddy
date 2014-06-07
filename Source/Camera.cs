@@ -41,11 +41,6 @@ namespace CameraBuddy
 		CountdownTimer ShakeTimer { get; set; }
 
 		/// <summary>
-		/// the amount of time to shake the camera
-		/// </summary>
-		private float m_fShakeTimeDelta;// = 0.25f;
-
-		/// <summary>
 		/// How hard to shake the camera.  1.0f for normal amount
 		/// </summary>
 		public float ShakeAmount { get; set; }
@@ -169,7 +164,6 @@ namespace CameraBuddy
 			m_bCameraReset = true;
 			m_CameraClock = new GameClock();
 			ShakeTimer = new CountdownTimer();
-			m_fShakeTimeDelta = 0.0f;
 			WorldBoundary = new Rectangle(0, 0, 0, 0);
 			IgnoreWorldBoundary = false;
 			ShakeAmount = 1.0f;
@@ -303,7 +297,7 @@ namespace CameraBuddy
 			}
 
 			//add the camera spin
-			if (ShakeTimer.RemainingTime() >= 0.0f)
+			if (ShakeTimer.RemainingTime() > 0.0f)
 			{
 				//figure out the proper rotation for the camera shake
 				float fShakeX = (ShakeRotate *
@@ -512,7 +506,7 @@ namespace CameraBuddy
 			m_Origin.X = ((m_fLeft + m_fRight) / 2.0f) - (TitleSafeArea.Left / Scale);
 			m_Origin.Y = ((m_fTop + m_fBottom) / 2.0f) - (TitleSafeArea.Top / Scale);
 
-			if (ShakeTimer.RemainingTime() >= 0.0f)
+			if (ShakeTimer.RemainingTime() > 0.0f)
 			{
 				/*
 				okay the formula for camera shake rotation:
@@ -544,16 +538,12 @@ namespace CameraBuddy
 		/// <param name="amount">how hard to shake the camera</param>
 		public void AddCameraShake(float fTimeDelta, float amount = 1.0f)
 		{
-			if (ShakeTimer.RemainingTime() > 0.0f)
+			if (ShakeTimer.RemainingTime() <= 0.0f)
 			{
-				ShakeTimer.AddTime(fTimeDelta);
-			}
-			else
-			{
-				ShakeTimer.Start(fTimeDelta);
 				m_bShakeLeft = !m_bShakeLeft;
 			}
-			
+
+			ShakeTimer.Start(fTimeDelta);
 			ShakeAmount = amount;
 		}
 
