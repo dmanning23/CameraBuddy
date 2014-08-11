@@ -1,4 +1,5 @@
 using System;
+using ResolutionBuddy;
 using Microsoft.Xna.Framework;
 using GameTimer;
 
@@ -108,16 +109,6 @@ namespace CameraBuddy
 		/// </summary>
 		public Matrix TranslationMatrix { get; private set; }
 
-		/// <summary>
-		/// the title safe area of the game window
-		/// </summary>
-		public Rectangle TitleSafeArea { private get; set; }
-
-		/// <summary>
-		/// the whole game window
-		/// </summary>
-		public Rectangle ScreenRect { private get; set; }
-
 		public float Left { get { return m_fLeft; } }
 		public float Right { get { return m_fRight; } }
 		public float Top { get { return m_fTop; } }
@@ -169,19 +160,6 @@ namespace CameraBuddy
 			ShakeAmount = 1.0f;
 
 			TranslationMatrix = Matrix.Identity;
-			TitleSafeArea = new Rectangle();
-			ScreenRect = new Rectangle();
-		}
-
-		/// <summary>
-		/// Sets the screen rects.
-		/// </summary>
-		/// <param name="rScreen">R screen.</param>
-		/// <param name="rTitleSafeArea">R title safe area.</param>
-		public void SetScreenRects(Rectangle rScreen, Rectangle rTitleSafeArea)
-		{
-			TitleSafeArea = rTitleSafeArea;
-			ScreenRect = rScreen;
 		}
 
 		/// <summary>
@@ -251,8 +229,8 @@ namespace CameraBuddy
 
 			//setup the translation matrix
 			Vector2 translationVect = new Vector2(
-				(TitleSafeArea.Width / 2.0f) - (Scale * m_Origin.X),
-				(TitleSafeArea.Height / 2.0f) - (Scale * m_Origin.Y));
+				(Resolution.TitleSafeArea.Width / 2.0f) - (Scale * m_Origin.X),
+				(Resolution.TitleSafeArea.Height / 2.0f) - (Scale * m_Origin.Y));
 			TranslationMatrix = Matrix.CreateTranslation(translationVect.X, translationVect.Y, 0.0f);
 
 			TranslationMatrix = Matrix.Multiply(scaleMatrix, TranslationMatrix);
@@ -356,7 +334,7 @@ namespace CameraBuddy
 			//check if we need to zoom to fit either horizontal or vertical
 
 			//get the current aspect ratio
-			float fScreenAspectRatio = (float)ScreenRect.Width / (float)ScreenRect.Height;
+			float fScreenAspectRatio = (float)Resolution.ScreenArea.Width / (float)Resolution.ScreenArea.Height;
 
 			//get the current target aspect ratio
 			float fWidth = m_fRight - m_fLeft;
@@ -430,14 +408,14 @@ namespace CameraBuddy
 					}
 				}
 
-				fNewScale = ScreenRect.Width / (m_fRight - m_fLeft);
+				fNewScale = Resolution.ScreenArea.Width / (m_fRight - m_fLeft);
 			}
 			//If the current target is greater than gl aspect ratio, A is too big (too wide)
 			else if (fMyAspectRatio > fScreenAspectRatio)
 			{
 				//i = 0.0f, figure for j
 				//increase the B (height) to fit the aspect ratio
-				float fTotalAdjustment = ((fWidth * (float)ScreenRect.Height) / (float)ScreenRect.Width) - fHeight;
+				float fTotalAdjustment = ((fWidth * (float)Resolution.ScreenArea.Height) / (float)Resolution.ScreenArea.Width) - fHeight;
 
 				//if that moves below the bottom, add it all to the top
 				float fAdjustedBottom = (m_fBottom + (fTotalAdjustment / 2.0f)); //this is where the bottom will be
@@ -488,7 +466,7 @@ namespace CameraBuddy
 					}
 				}
 
-				fNewScale = ScreenRect.Height / (m_fBottom - m_fTop);
+				fNewScale = Resolution.ScreenArea.Height / (m_fBottom - m_fTop);
 			}
 
 			//set the camera scale
@@ -503,8 +481,8 @@ namespace CameraBuddy
 			m_fPrevScale = Scale;
 
 			//set teh camer position to be the center of the desired rectangle;
-			m_Origin.X = ((m_fLeft + m_fRight) / 2.0f) - (TitleSafeArea.Left / Scale);
-			m_Origin.Y = ((m_fTop + m_fBottom) / 2.0f) - (TitleSafeArea.Top / Scale);
+			m_Origin.X = ((m_fLeft + m_fRight) / 2.0f) - (Resolution.TitleSafeArea.Left / Scale);
+			m_Origin.Y = ((m_fTop + m_fBottom) / 2.0f) - (Resolution.TitleSafeArea.Top / Scale);
 
 			if (ShakeTimer.RemainingTime() > 0.0f)
 			{
