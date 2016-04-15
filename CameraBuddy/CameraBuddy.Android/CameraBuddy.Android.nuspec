@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>CameraBuddy.Android</id>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
         <title>CameraBuddy.Android</title>
         <authors>dmanning23</authors>
 		<owners>dmanning23</owners>
@@ -20,11 +20,10 @@
 			<dependency id="RandomExtensions.dmanning23.Android" version="1.0"/>
 			<dependency id="ResolutionBuddy.Android" version="1.0"/>
 			<dependency id="Vector2Extensions.Android" version="1.0"/>
-			
         </dependencies>
     </metadata>
     <files>
-        <file src=".\bin\Release\CameraBuddy.Android.pdb" target="lib\CameraBuddy.Android.pdb" />
-        <file src=".\bin\Release\CameraBuddy.Android.dll" target="lib\CameraBuddy.Android.dll" />
+        <file src="bin\Release\CameraBuddy.Android.pdb" target="lib\CameraBuddy.Android.pdb" />
+        <file src="bin\Release\CameraBuddy.Android.dll" target="lib\CameraBuddy.Android.dll" />
     </files>
 </package>
