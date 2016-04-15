@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>CameraBuddy.DesktopGL</id>
+        <version>1.0.0</version>
+        <title>CameraBuddy.DesktopGL</title>
+        <authors>dmanning23</authors>
+		<owners>dmanning23</owners>
+		<projectUrl>https://github.com/dmanning23/CameraBuddy</projectUrl>
+		<licenseUrl>https://github.com/dmanning23/CameraBuddy/blob/master/LICENSE.txt</licenseUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>2d camera for MonoGame</description>
+		<releaseNotes />
+		<copyright>Copyright 2016</copyright>
+		<tags>MonoGame DesktopGL</tags>
+		<dependencies>
+			<dependency id="MonoGame.Framework.DesktopGL" version="3.5"/>
+			<dependency id="GameTimer.DesktopGL" version="1.0"/>
+			<dependency id="MatrixExtensions.DesktopGL" version="1.0"/>
+			<dependency id="RandomExtensions.dmanning23.DesktopGL" version="1.0"/>
+			<dependency id="ResolutionBuddy.DesktopGL" version="1.0"/>
+			<dependency id="Vector2Extensions.DesktopGL" version="1.0"/>
+			
+        </dependencies>
+    </metadata>
+    <files>
+        <file src=".\bin\Release\CameraBuddy.DesktopGL.pdb" target="lib\CameraBuddy.DesktopGL.pdb" />
+        <file src=".\bin\Release\CameraBuddy.DesktopGL.dll" target="lib\CameraBuddy.DesktopGL.dll" />
+    </files>
+</package>
