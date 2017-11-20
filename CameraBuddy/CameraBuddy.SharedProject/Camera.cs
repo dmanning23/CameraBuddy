@@ -7,39 +7,50 @@ namespace CameraBuddy
 {
 	public class Camera
 	{
-		#region Members
+		#region Fields
 
-		//The previous coordinate system
-		float m_fPrevLeft;
-		float m_fPrevRight;
-		float m_fPrevTop;
-		float m_fPrevBottom;
+		/// <summary>
+		/// the amount to zoom during a camera shake
+		/// this is a number between 0.0 and 1.0
+		/// smaller = more shake
+		/// </summary>
+		private const float CAMERA_SHAKE_ZOOM = 0.02f;
 
-		//the target coordinate system, will fit every object onto the screen.
-		float m_fLeft;
-		float m_fRight;
-		float m_fTop;
-		float m_fBottom;
+		/// <summary>
+		/// the amount to multiply the rotation of during the shake
+		/// </summary>
+		private const float CAMERA_SHAKE_ROTATE = 25.0f;
+
+		/// <summary>
+		/// how fast the camera can pan
+		/// </summary>
+		private const float CAMERA_SPEED = 10.0f;
+
+		private const float SCALE_SPEED = 20.0f;
+
+		#endregion //Fields
+
+		#region Properties
 
 		/// <summary>
 		/// flag used to reset the camera each frame
 		/// </summary>
-		bool m_bCameraReset;
+		private bool CameraReset { get; set; }
 
 		/// <summary>
 		/// this is whether to shake the camera left or right
 		/// </summary>
-		bool m_bShakeLeft;
+		private bool ShakeLeft { get; set; }
 
 		/// <summary>
 		/// Clock used for camera movement and timing
 		/// </summary>
-		GameClock m_CameraClock;
+		private GameClock CameraClock { get; set; }
 
 		/// <summary>
 		/// This is the time the camera started shaking
 		/// </summary>
-		CountdownTimer ShakeTimer { get; set; }
+		private CountdownTimer ShakeTimer { get; set; }
 
 		/// <summary>
 		/// How hard to shake the camera.  1.0f for normal amount
@@ -47,38 +58,18 @@ namespace CameraBuddy
 		public float ShakeAmount { get; set; }
 
 		/// <summary>
-		/// the amount to zoom during a camera shake
-		/// this is a number between 0.0 and 1.0
-		/// smaller = more shake
-		/// </summary>
-		private const float g_CAMERA_SHAKE_ZOOM = 0.02f;
-
-		/// <summary>
-		/// the amount to multiply the rotation of during the shake
-		/// </summary>
-		private const float g_CAMERA_SHAKE_ROTATE = 25.0f;
-
-		/// <summary>
-		/// how fast the camera can pan
-		/// </summary>
-		private const float g_CAMERA_SPEED = 10.0f;
-
-		private const float g_ScaleSpeed = 20.0f;
-
-		#endregion //Members
-
-		#region Properties
-
-		/// <summary>
 		/// teh position to use as the camera center
 		/// </summary>
-		private Vector2 m_Origin;
-
+		private Vector2 _origin;
 		public Vector2 Origin
 		{
 			get
 			{
-				return m_Origin;
+				return _origin;
+			}
+			set
+			{
+				_origin = value;
 			}
 		}
 
@@ -90,7 +81,7 @@ namespace CameraBuddy
 		/// <summary>
 		/// the previous value of Scale
 		/// </summary>
-		private float m_fPrevScale;
+		private float PrevScale { get; set; }
 
 		/// <summary>
 		/// The boundary we don't want the camera to leave!
@@ -109,16 +100,23 @@ namespace CameraBuddy
 		/// </summary>
 		public Matrix TranslationMatrix { get; private set; }
 
-		public float Left { get { return m_fLeft; } }
-		public float Right { get { return m_fRight; } }
-		public float Top { get { return m_fTop; } }
-		public float Bottom { get { return m_fBottom; } }
+		//The previous coordinate system
+		private float PrevLeft { get; set; }
+		private float PrevRight { get; set; }
+		private float PrevTop { get; set; }
+		private float PrevBottom { get; set; }
+
+		//the target coordinate system, will fit every object onto the screen.
+		public float Left { get; private set; }
+		public float Right { get; private set; }
+		public float Top { get; private set; }
+		public float Bottom { get; private set; }
 
 		private float ShakeZoom
 		{
 			get
 			{
-				return g_CAMERA_SHAKE_ZOOM * ShakeAmount;
+				return CAMERA_SHAKE_ZOOM * ShakeAmount;
 			}
 		}
 
@@ -126,7 +124,7 @@ namespace CameraBuddy
 		{
 			get
 			{
-				return g_CAMERA_SHAKE_ROTATE * ShakeAmount;
+				return CAMERA_SHAKE_ROTATE * ShakeAmount;
 			}
 		}
 
@@ -140,20 +138,20 @@ namespace CameraBuddy
 		public Camera()
 		{
 			Scale = 1.0f;
-			m_fPrevScale = 1.0f;
-			m_Origin = Vector2.Zero;
+			PrevScale = 1.0f;
+			Origin = Vector2.Zero;
 
-			m_fPrevLeft = 0.0f;
-			m_fPrevRight = 0.0f;
-			m_fPrevTop = 0.0f;
-			m_fPrevBottom = 0.0f;
-			m_fLeft = 0.0f;
-			m_fRight = 0.0f;
-			m_fTop = 0.0f;
-			m_fBottom = 0.0f;
-			m_bShakeLeft = true;
-			m_bCameraReset = true;
-			m_CameraClock = new GameClock();
+			PrevLeft = 0.0f;
+			PrevRight = 0.0f;
+			PrevTop = 0.0f;
+			PrevBottom = 0.0f;
+			Left = 0.0f;
+			Right = 0.0f;
+			Top = 0.0f;
+			Bottom = 0.0f;
+			ShakeLeft = true;
+			CameraReset = true;
+			CameraClock = new GameClock();
 			ShakeTimer = new CountdownTimer();
 			WorldBoundary = new Rectangle(0, 0, 0, 0);
 			IgnoreWorldBoundary = false;
@@ -166,11 +164,11 @@ namespace CameraBuddy
 		/// Called to reset the camera view each frame
 		/// Make sure to call this before any pionts are added to the scene
 		/// </summary>
-		public void Update(GameClock rGameTime)
+		public void Update(GameClock clock)
 		{
-			m_bCameraReset = true;
-			m_CameraClock.Update(rGameTime);
-			ShakeTimer.Update(m_CameraClock);
+			CameraReset = true;
+			CameraClock.Update(clock);
+			ShakeTimer.Update(CameraClock);
 		}
 
 		/// <summary>
@@ -178,39 +176,39 @@ namespace CameraBuddy
 		/// This gets called multiple times during the update loop to add all the points we want in frame.
 		/// Later, it will calculate a scale and translation matrix to fit them all on screen.
 		/// </summary>
-		/// <param name="myPoint">the point that we want to be seen in the camera</param>
-		public void AddPoint(Vector2 myPoint)
+		/// <param name="point">the point that we want to be seen in the camera</param>
+		public void AddPoint(Vector2 point)
 		{
-			if (m_bCameraReset)
+			if (CameraReset)
 			{
 				//first point this frame, reset the viewport
-				m_fLeft = myPoint.X;
-				m_fRight = myPoint.X;
-				m_fBottom = myPoint.Y;
-				m_fTop = myPoint.Y;
+				Left = point.X;
+				Right = point.X;
+				Bottom = point.Y;
+				Top = point.Y;
 
-				m_bCameraReset = false;
+				CameraReset = false;
 			}
 			else
 			{
 				//check the left & right
-				if (myPoint.X < m_fLeft)
+				if (point.X < Left)
 				{
-					m_fLeft = myPoint.X;
+					Left = point.X;
 				}
-				else if (myPoint.X > m_fRight)
+				else if (point.X > Right)
 				{
-					m_fRight = myPoint.X;
+					Right = point.X;
 				}
 
 				//check the top & bottom
-				if (myPoint.Y < m_fTop)
+				if (point.Y < Top)
 				{
-					m_fTop = myPoint.Y;
+					Top = point.Y;
 				}
-				else if (myPoint.Y > m_fBottom)
+				else if (point.Y > Bottom)
 				{
-					m_fBottom = myPoint.Y;
+					Bottom = point.Y;
 				}
 			}
 		}
@@ -219,20 +217,21 @@ namespace CameraBuddy
 		/// Call this before spritebatch.begin is called to set the matrixes up
 		/// After this is called, get the TranslationMatrix and pass it into spritebatch.begin
 		/// </summary>
-		/// <param name="bForceToViewport">Can pass "true" to force it to snap to the required matrix, pass "false" to slowly transition</param>
-		public void BeginScene(bool bForceToViewport)
+		/// <param name="forceToViewport">Can pass "true" to force it to snap to the required matrix, pass "false" to slowly transition</param>
+		public void BeginScene(bool forceToViewport)
 		{
-			MoveToViewport(bForceToViewport);
+			MoveToViewport(forceToViewport);
 
 			//setup the scale matrix
-			Matrix scaleMatrix = Matrix.CreateScale(Scale);
+			var scaleMatrix = Matrix.CreateScale(Scale);
+
+			//Get the translation vectors
+			var translationVect = new Vector2(
+				(Resolution.TitleSafeArea.Width / 2f) - (Scale * Origin.X),
+				(Resolution.TitleSafeArea.Height / 2f) - (Scale * Origin.Y));
 
 			//setup the translation matrix
-			Vector2 translationVect = new Vector2(
-				(Resolution.TitleSafeArea.Width / 2.0f) - (Scale * m_Origin.X),
-				(Resolution.TitleSafeArea.Height / 2.0f) - (Scale * m_Origin.Y));
-			TranslationMatrix = Matrix.CreateTranslation(translationVect.X, translationVect.Y, 0.0f);
-
+			TranslationMatrix = Matrix.CreateTranslation(translationVect.X, translationVect.Y, 0f);
 			TranslationMatrix = Matrix.Multiply(scaleMatrix, TranslationMatrix);
 		}
 
@@ -240,106 +239,106 @@ namespace CameraBuddy
 		/// Moves to viewport.
 		/// Can pass "true" to force it to snap to the required matrix, pass "false" to slowly transition
 		/// </summary>
-		/// <param name="bForceToViewport">If set to <c>true</c> b force to viewport.</param>
-		private void MoveToViewport(bool bForceToViewport)
+		/// <param name="forceToViewport">If set to <c>true</c> b force to viewport.</param>
+		private void MoveToViewport(bool forceToViewport)
 		{
 			//set the camera position 
-			if (bForceToViewport)
+			if (forceToViewport)
 			{
-				m_fPrevLeft = m_fLeft;
-				m_fPrevRight = m_fRight;
-				m_fPrevTop = m_fTop;
-				m_fPrevBottom = m_fBottom;
+				PrevLeft = Left;
+				PrevRight = Right;
+				PrevTop = Top;
+				PrevBottom = Bottom;
 			}
 			else
 			{
 				//move the left
-				float fLeftDiff = (((m_fLeft - m_fPrevLeft) * g_CAMERA_SPEED) * m_CameraClock.TimeDelta);
-				m_fPrevLeft += fLeftDiff;
-				m_fLeft = m_fPrevLeft;
+				var leftDiff = (((Left - PrevLeft) * CAMERA_SPEED) * CameraClock.TimeDelta);
+				PrevLeft += leftDiff;
+				Left = PrevLeft;
 
 				//move the Right
-				float fRightDiff = (((m_fRight - m_fPrevRight) * g_CAMERA_SPEED) * m_CameraClock.TimeDelta);
-				m_fPrevRight += fRightDiff;
-				m_fRight = m_fPrevRight;
+				var rightDiff = (((Right - PrevRight) * CAMERA_SPEED) * CameraClock.TimeDelta);
+				PrevRight += rightDiff;
+				Right = PrevRight;
 
 				//move the Top
-				float fTopDiff = (((m_fTop - m_fPrevTop) * g_CAMERA_SPEED) * m_CameraClock.TimeDelta);
-				m_fPrevTop += fTopDiff;
-				m_fTop = m_fPrevTop;
+				var topDiff = (((Top - PrevTop) * CAMERA_SPEED) * CameraClock.TimeDelta);
+				PrevTop += topDiff;
+				Top = PrevTop;
 
 				//move the Bottom
-				float fBottomDiff = (((m_fBottom - m_fPrevBottom) * g_CAMERA_SPEED) * m_CameraClock.TimeDelta);
-				m_fPrevBottom += fBottomDiff;
-				m_fBottom = m_fPrevBottom;
+				var bottomDiff = (((Bottom - PrevBottom) * CAMERA_SPEED) * CameraClock.TimeDelta);
+				PrevBottom += bottomDiff;
+				Bottom = PrevBottom;
 			}
 
 			//add the camera spin
-			if (ShakeTimer.RemainingTime() > 0.0f)
+			if (ShakeTimer.RemainingTime > 0.0f)
 			{
 				//figure out the proper rotation for the camera shake
-				float fShakeX = (ShakeRotate *
+				var shakeX = (ShakeRotate *
 					(float)Math.Sin(
 					((ShakeTimer.CurrentTime * (2.0f * Math.PI)) /
 					ShakeTimer.CountdownLength)));
 
-				float fShakeY = (ShakeRotate *
+				var shakeY = (ShakeRotate *
 					(float)Math.Cos(
 					((ShakeTimer.CurrentTime * (2.0f * Math.PI)) /
 					ShakeTimer.CountdownLength)));
 
-				fShakeX = fShakeX * (m_bShakeLeft ? -1.0f : 1.0f);
+				shakeX = shakeX * (ShakeLeft ? -1.0f : 1.0f);
 
-				m_fLeft += fShakeX;
-				m_fRight += fShakeX;
+				Left += shakeX;
+				Right += shakeX;
 
-				m_fTop += fShakeY;
-				m_fBottom += fShakeY;
+				Top += shakeY;
+				Bottom += shakeY;
 			}
 
 			//Constrain the camera to stay in teh game world... or dont.
 			if (!IgnoreWorldBoundary)
 			{
 				//hold all points inside the game world!
-				if (m_fTop < WorldBoundary.Top)
+				if (Top < WorldBoundary.Top)
 				{
-					m_fTop = WorldBoundary.Top;
-				}
-			
-				if (m_fBottom > WorldBoundary.Bottom)
-				{
-					m_fBottom = WorldBoundary.Bottom;
+					Top = WorldBoundary.Top;
 				}
 
-				if (m_fLeft < WorldBoundary.Left)
+				if (Bottom > WorldBoundary.Bottom)
 				{
-					m_fLeft = WorldBoundary.Left;
+					Bottom = WorldBoundary.Bottom;
 				}
 
-				if (m_fRight > WorldBoundary.Right)
+				if (Left < WorldBoundary.Left)
 				{
-					m_fRight = WorldBoundary.Right;
+					Left = WorldBoundary.Left;
+				}
+
+				if (Right > WorldBoundary.Right)
+				{
+					Right = WorldBoundary.Right;
 				}
 			}
 			else
 			{
 				//Let the camera roam around wherever it wants
 				WorldBoundary = new Rectangle(
-					(int)m_fLeft, 
-					(int)m_fTop, 
-					(int)(m_fRight - m_fLeft), 
-					(int)(m_fBottom - m_fTop));
+					(int)Left,
+					(int)Top,
+					(int)(Right - Left),
+					(int)(Bottom - Top));
 			}
 
 			//check if we need to zoom to fit either horizontal or vertical
 
 			//get the current aspect ratio
-			float fScreenAspectRatio = (float)Resolution.ScreenArea.Width / (float)Resolution.ScreenArea.Height;
+			var screenAspectRatio = (float)Resolution.ScreenArea.Width / (float)Resolution.ScreenArea.Height;
 
 			//get the current target aspect ratio
-			float fWidth = m_fRight - m_fLeft;
-			float fHeight = m_fBottom - m_fTop;
-			float fMyAspectRatio = fWidth / fHeight;
+			var width = Right - Left;
+			var height = Bottom - Top;
+			var aspectRatio = width / height;
 
 			/*
 			Here's the formula:
@@ -352,139 +351,139 @@ namespace CameraBuddy
 			*/
 
 			//If the current target is less than gl aspect ratio, B is too big (too tall)
-			float fNewScale = 1.0f;
-			if (fMyAspectRatio < fScreenAspectRatio)
+			var newScale = 1.0f;
+			if (aspectRatio < screenAspectRatio)
 			{
 				//j = 0.0f, figure for i
 				//increase the A (width) to fit the aspect ratio
-				float fTotalAdjustment = (fScreenAspectRatio * fHeight) - fWidth;
+				var totalAdjustment = (screenAspectRatio * height) - width;
 
 				//don't let it go past the walls
-				float fAdjustedRight = (m_fRight + (fTotalAdjustment / 2.0f));
-				float fAdjustedLeft = (m_fLeft - (fTotalAdjustment / 2.0f));
+				var adjustedRight = (Right + (totalAdjustment / 2.0f));
+				var adjustedLeft = (Left - (totalAdjustment / 2.0f));
 
-				bool bOffRightWall = fAdjustedRight > WorldBoundary.Right;
-				bool bOffLeftWall = fAdjustedLeft < WorldBoundary.Left;
+				var offRightWall = adjustedRight > WorldBoundary.Right;
+				var offLeftWall = adjustedLeft < WorldBoundary.Left;
 
-				if (IgnoreWorldBoundary || (!bOffRightWall && !bOffLeftWall))
+				if (IgnoreWorldBoundary || (!offRightWall && !offLeftWall))
 				{
 					//those new limits are fine!
-					m_fRight = fAdjustedRight;
-					m_fLeft = fAdjustedLeft;
+					Right = adjustedRight;
+					Left = adjustedLeft;
 				}
-				else if (bOffRightWall && bOffLeftWall)
+				else if (offRightWall && offLeftWall)
 				{
 					//both limits are screwed up
-					m_fRight = WorldBoundary.Right;
-					m_fLeft = WorldBoundary.Left;
+					Right = WorldBoundary.Right;
+					Left = WorldBoundary.Left;
 				}
 				else
 				{
 					//have to adjust to keep the camera on the board
 
-					if (bOffRightWall && !bOffLeftWall)
+					if (offRightWall && !offLeftWall)
 					{
 						//put the right at the wall
-						float fRightAdjustment = fAdjustedRight - WorldBoundary.Right;
-						m_fRight = WorldBoundary.Right;
-						m_fLeft -= ((fTotalAdjustment / 2.0f) + fRightAdjustment);
+						var fRightAdjustment = adjustedRight - WorldBoundary.Right;
+						Right = WorldBoundary.Right;
+						Left -= ((totalAdjustment / 2.0f) + fRightAdjustment);
 					}
-					else if (!bOffRightWall && bOffLeftWall)
+					else if (!offRightWall && offLeftWall)
 					{
 						//put the left at the wall
-						float fLeftAdjustment = WorldBoundary.Left - fAdjustedLeft;
-						m_fLeft = WorldBoundary.Left;
-						m_fRight += (fTotalAdjustment / 2.0f) + fLeftAdjustment;
+						var fLeftAdjustment = WorldBoundary.Left - adjustedLeft;
+						Left = WorldBoundary.Left;
+						Right += (totalAdjustment / 2.0f) + fLeftAdjustment;
 					}
 
 					//ok double check those limits are still good after being adjusted
-					if (m_fRight > WorldBoundary.Right)
+					if (Right > WorldBoundary.Right)
 					{
-						m_fRight = WorldBoundary.Right;
+						Right = WorldBoundary.Right;
 					}
-					if (m_fLeft < WorldBoundary.Left)
+					if (Left < WorldBoundary.Left)
 					{
-						m_fLeft = WorldBoundary.Left;
+						Left = WorldBoundary.Left;
 					}
 				}
 
-				fNewScale = Resolution.ScreenArea.Width / (m_fRight - m_fLeft);
+				newScale = Resolution.ScreenArea.Width / (Right - Left);
 			}
 			//If the current target is greater than gl aspect ratio, A is too big (too wide)
-			else if (fMyAspectRatio > fScreenAspectRatio)
+			else if (aspectRatio > screenAspectRatio)
 			{
 				//i = 0.0f, figure for j
 				//increase the B (height) to fit the aspect ratio
-				float fTotalAdjustment = ((fWidth * (float)Resolution.ScreenArea.Height) / (float)Resolution.ScreenArea.Width) - fHeight;
+				var totalAdjustment = ((width * (float)Resolution.ScreenArea.Height) / (float)Resolution.ScreenArea.Width) - height;
 
 				//if that moves below the bottom, add it all to the top
-				float fAdjustedBottom = (m_fBottom + (fTotalAdjustment / 2.0f)); //this is where the bottom will be
-				float fAdjustedCeiling = (m_fTop - (fTotalAdjustment / 2.0f)); //this is where ceiling will be
+				var adjustedBottom = (Bottom + (totalAdjustment / 2.0f)); //this is where the bottom will be
+				var adjustedCeiling = (Top - (totalAdjustment / 2.0f)); //this is where ceiling will be
 
-				bool bOffBottomWall = fAdjustedBottom > WorldBoundary.Bottom;
-				bool bOffCeilingWall = fAdjustedCeiling < WorldBoundary.Top;
+				var offBottomWall = adjustedBottom > WorldBoundary.Bottom;
+				var offCeilingWall = adjustedCeiling < WorldBoundary.Top;
 
-				if (IgnoreWorldBoundary || (!bOffBottomWall && !bOffCeilingWall))
+				if (IgnoreWorldBoundary || (!offBottomWall && !offCeilingWall))
 				{
 					//those new limits are fine!
-					m_fTop = fAdjustedCeiling;
-					m_fBottom = fAdjustedBottom;
+					Top = adjustedCeiling;
+					Bottom = adjustedBottom;
 				}
-				else if (bOffBottomWall && bOffCeilingWall)
+				else if (offBottomWall && offCeilingWall)
 				{
 					//both limits are screwed up
-					m_fBottom = WorldBoundary.Bottom;
-					m_fTop = WorldBoundary.Top;
+					Bottom = WorldBoundary.Bottom;
+					Top = WorldBoundary.Top;
 				}
 				else
 				{
 					//have to adjust to keep the camera on the board
 
-					if (bOffBottomWall && !bOffCeilingWall)
+					if (offBottomWall && !offCeilingWall)
 					{
 						//put the bottom at the floor
-						float fBottomAdjustment = fAdjustedBottom - WorldBoundary.Bottom;
-						m_fBottom = WorldBoundary.Bottom;
-						m_fTop -= ((fTotalAdjustment / 2.0f) + fBottomAdjustment);
+						var fBottomAdjustment = adjustedBottom - WorldBoundary.Bottom;
+						Bottom = WorldBoundary.Bottom;
+						Top -= ((totalAdjustment / 2.0f) + fBottomAdjustment);
 					}
-					else if (!bOffBottomWall && bOffCeilingWall)
+					else if (!offBottomWall && offCeilingWall)
 					{
 						//put the top at the ceiling
-						float fTopAdjustment = WorldBoundary.Top - fAdjustedCeiling;
-						m_fTop = WorldBoundary.Top;
-						m_fBottom += (fTotalAdjustment / 2.0f) + fTopAdjustment;
+						var fTopAdjustment = WorldBoundary.Top - adjustedCeiling;
+						Top = WorldBoundary.Top;
+						Bottom += (totalAdjustment / 2.0f) + fTopAdjustment;
 					}
 
 					//ok double check those limits are still good after being adjusted
-					if (m_fBottom > WorldBoundary.Bottom)
+					if (Bottom > WorldBoundary.Bottom)
 					{
-						m_fBottom = WorldBoundary.Bottom;
+						Bottom = WorldBoundary.Bottom;
 					}
-					if (m_fTop < WorldBoundary.Top)
+					if (Top < WorldBoundary.Top)
 					{
-						m_fTop = WorldBoundary.Top;
+						Top = WorldBoundary.Top;
 					}
 				}
 
-				fNewScale = Resolution.ScreenArea.Height / (m_fBottom - m_fTop);
+				newScale = Resolution.ScreenArea.Height / (Bottom - Top);
 			}
 
 			//set the camera scale
-			if (bForceToViewport)
+			if (forceToViewport)
 			{
-				Scale = fNewScale;
+				Scale = newScale;
 			}
 			else
 			{
-				Scale += (((fNewScale - m_fPrevScale) * g_ScaleSpeed) * m_CameraClock.TimeDelta);
+				Scale += (((newScale - PrevScale) * SCALE_SPEED) * CameraClock.TimeDelta);
 			}
-			m_fPrevScale = Scale;
+			PrevScale = Scale;
 
 			//set teh camer position to be the center of the desired rectangle;
-			m_Origin.X = ((m_fLeft + m_fRight) / 2.0f) - (Resolution.TitleSafeArea.Left / Scale);
-			m_Origin.Y = ((m_fTop + m_fBottom) / 2.0f) - (Resolution.TitleSafeArea.Top / Scale);
+			_origin.X = ((Left + Right) / 2.0f) - (Resolution.TitleSafeArea.Left / Scale);
+			_origin.Y = ((Top + Bottom) / 2.0f) - (Resolution.TitleSafeArea.Top / Scale);
 
-			if (ShakeTimer.RemainingTime() > 0.0f)
+			if (ShakeTimer.RemainingTime > 0.0f)
 			{
 				/*
 				okay the formula for camera shake rotation:
@@ -501,27 +500,27 @@ namespace CameraBuddy
 				*/
 
 				//figure how much camera shake to add to the zoom
-				float fShakeZoom = ((Scale * ShakeZoom) *
+				var shakeZoom = ((Scale * ShakeZoom) *
 					(float)Math.Sin(
 					((ShakeTimer.CurrentTime * Math.PI) /
 					ShakeTimer.CountdownLength)));
-				Scale *= 1.0f + fShakeZoom;
+				Scale *= 1.0f + shakeZoom;
 			}
 		}
 
 		/// <summary>
 		/// add some camera shaking!
 		/// </summary>
-		/// <param name="fTimeDelta">how long to shake the camera</param>
+		/// <param name="timeDelta">how long to shake the camera</param>
 		/// <param name="amount">how hard to shake the camera</param>
-		public void AddCameraShake(float fTimeDelta, float amount = 1.0f)
+		public void AddCameraShake(float timeDelta, float amount = 1.0f)
 		{
-			if (ShakeTimer.RemainingTime() <= 0.0f)
+			if (ShakeTimer.RemainingTime <= 0.0f)
 			{
-				m_bShakeLeft = !m_bShakeLeft;
+				ShakeLeft = !ShakeLeft;
 			}
 
-			ShakeTimer.Start(fTimeDelta);
+			ShakeTimer.Start(timeDelta);
 			ShakeAmount = amount;
 		}
 
