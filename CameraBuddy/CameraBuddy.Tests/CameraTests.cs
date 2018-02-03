@@ -1,14 +1,8 @@
 ﻿using GameTimer;
-using MatrixExtensions;
 using Microsoft.Xna.Framework;
 using Moq;
 using NUnit.Framework;
 using ResolutionBuddy;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CameraBuddy.Tests
 {

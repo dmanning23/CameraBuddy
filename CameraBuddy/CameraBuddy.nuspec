@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata>
 		<id>CameraBuddy</id>
-		<version>1.0.5</version>
+		<version>1.0.8</version>
 		<title>CameraBuddy</title>
 		<authors>dmanning23</authors>
 		<owners>dmanning23</owners>
@@ -47,7 +47,7 @@
 			</group>
 
 			<group targetFramework="net451">
-				<dependency id="MonoGame.Framework.DesktopGL" version="3.5"/>
+				<dependency id="MonoGame.Framework.WindowsDX" version="3.5"/>
 				<dependency id="GameTimer" version="1.0"/>
 				<dependency id="MatrixExtensions" version="1.0.1"/>
 				<dependency id="RandomExtensions.dmanning23" version="1.0"/>
@@ -71,9 +71,9 @@
 		<file src="CameraBuddy.WindowsUniversal\bin\Release\CameraBuddy.WindowsUniversal.pdb" target="lib\uap10.0\CameraBuddy.WindowsUniversal.pdb" />
 		<file src="CameraBuddy.WindowsUniversal\bin\Release\CameraBuddy.WindowsUniversal.dll" target="lib\uap10.0\CameraBuddy.WindowsUniversal.dll" />
 
-		<!--DesktopGL-->
-		<file src="CameraBuddy.DesktopGL\bin\Release\CameraBuddy.DesktopGL.pdb" target="lib\net451\CameraBuddy.DesktopGL.pdb" />
-		<file src="CameraBuddy.DesktopGL\bin\Release\CameraBuddy.DesktopGL.dll" target="lib\net451\CameraBuddy.DesktopGL.dll" />
+		<!--WindowsDX-->
+		<file src="CameraBuddy.WindowsDX\bin\Release\CameraBuddy.WindowsDX.pdb" target="lib\net451\CameraBuddy.WindowsDX.pdb" />
+		<file src="CameraBuddy.WindowsDX\bin\Release\CameraBuddy.WindowsDX.dll" target="lib\net451\CameraBuddy.WindowsDX.dll" />
 
 	</files>
 </package>

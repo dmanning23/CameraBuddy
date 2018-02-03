@@ -1,7 +1,7 @@
-using System;
-using ResolutionBuddy;
-using Microsoft.Xna.Framework;
 using GameTimer;
+using Microsoft.Xna.Framework;
+using ResolutionBuddy;
+using System;
 
 namespace CameraBuddy
 {
@@ -128,6 +128,14 @@ namespace CameraBuddy
 			}
 		}
 
+		/// <summary>
+		/// A perecentage between 0.0-1.0 of how much padding to add to the screen 
+		/// </summary>
+		public float LeftPadding { get; set; }
+		public float RightPadding { get; set; }
+		public float TopPadding { get; set; }
+		public float BottomPadding { get; set; }
+
 		#endregion //Properties
 
 		#region Methods
@@ -242,6 +250,14 @@ namespace CameraBuddy
 		/// <param name="forceToViewport">If set to <c>true</c> b force to viewport.</param>
 		private void MoveToViewport(bool forceToViewport)
 		{
+			//Add the padding
+			var vert = Bottom - Top;
+			Top -= vert * TopPadding;
+			Bottom += vert * BottomPadding;
+			var horiz = Right - Left;
+			Left -= horiz * LeftPadding;
+			Right += horiz * RightPadding;
+
 			//set the camera position 
 			if (forceToViewport)
 			{
