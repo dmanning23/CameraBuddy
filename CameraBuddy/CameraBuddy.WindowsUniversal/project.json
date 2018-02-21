@@ -1,10 +1,10 @@
 ﻿{
   "dependencies": {
-    "GameTimer": "1.0.7",
+    "GameTimer": "1.0.8",
     "MatrixExtensions": "1.0.3",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
     "MonoGame.Framework.WindowsUniversal": "3.6.0.1625",
-    "RandomExtensions.dmanning23": "1.0.4",
+    "RandomExtensions.dmanning23": "1.0.5",
     "ResolutionBuddy": "1.0.16",
     "Vector2Extensions": "1.0.9"
   },
