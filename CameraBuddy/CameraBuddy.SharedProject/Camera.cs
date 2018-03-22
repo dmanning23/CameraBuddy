@@ -40,7 +40,7 @@ namespace CameraBuddy
 		/// <summary>
 		/// this is whether to shake the camera left or right
 		/// </summary>
-		private bool ShakeLeft { get; set; }
+		protected bool ShakeLeft { get; set; }
 
 		/// <summary>
 		/// Clock used for camera movement and timing
@@ -50,12 +50,12 @@ namespace CameraBuddy
 		/// <summary>
 		/// This is the time the camera started shaking
 		/// </summary>
-		private CountdownTimer ShakeTimer { get; set; }
+		protected CountdownTimer ShakeTimer { get; set; }
 
 		/// <summary>
 		/// How hard to shake the camera.  1.0f for normal amount
 		/// </summary>
-		public float ShakeAmount { get; set; }
+		protected float ShakeAmount { get; set; }
 
 		/// <summary>
 		/// teh position to use as the camera center
@@ -531,13 +531,22 @@ namespace CameraBuddy
 		/// <param name="amount">how hard to shake the camera</param>
 		public void AddCameraShake(float timeDelta, float amount = 1.0f)
 		{
-			if (ShakeTimer.RemainingTime <= 0.0f)
-			{
-				ShakeLeft = !ShakeLeft;
-			}
+			ShakeLeft = !ShakeLeft;
 
-			ShakeTimer.Start(timeDelta);
-			ShakeAmount = amount;
+			if (ShakeTimer.HasTimeRemaining)
+			{
+				ShakeAmount = Math.Max(ShakeAmount, amount);
+
+				if (ShakeTimer.RemainingTime < timeDelta)
+				{
+					ShakeTimer.Start(timeDelta);
+				}
+			}
+			else
+			{
+				ShakeAmount = amount;
+				ShakeTimer.Start(timeDelta);
+			}
 		}
 
 		/// <summary>
