@@ -136,6 +136,9 @@ namespace CameraBuddy
 		public float TopPadding { get; set; }
 		public float BottomPadding { get; set; }
 
+		public float? MinScale { get; set; }
+		public float? MaxScale { get; set; }
+
 		#endregion //Properties
 
 		#region Methods
@@ -484,16 +487,7 @@ namespace CameraBuddy
 				newScale = Resolution.ScreenArea.Height / (Bottom - Top);
 			}
 
-			//set the camera scale
-			if (forceToViewport)
-			{
-				Scale = newScale;
-			}
-			else
-			{
-				Scale += (((newScale - PrevScale) * SCALE_SPEED) * CameraClock.TimeDelta);
-			}
-			PrevScale = Scale;
+			UpdateScale(forceToViewport, newScale);
 
 			//set teh camer position to be the center of the desired rectangle;
 			_origin.X = ((Left + Right) / 2.0f) - (Resolution.TitleSafeArea.Left / Scale);
@@ -522,6 +516,35 @@ namespace CameraBuddy
 					ShakeTimer.CountdownLength)));
 				Scale *= 1.0f + shakeZoom;
 			}
+		}
+
+		/// <summary>
+		/// set the camera scale
+		/// </summary>
+		/// <param name="forceToViewport"></param>
+		/// <param name="newScale"></param>
+		private void UpdateScale(bool forceToViewport, float newScale)
+		{
+			if (forceToViewport)
+			{
+				Scale = newScale;
+			}
+			else
+			{
+				Scale += (((newScale - PrevScale) * SCALE_SPEED) * CameraClock.TimeDelta);
+			}
+
+			if (MaxScale.HasValue)
+			{
+				Scale = Math.Min(Scale, MaxScale.Value);
+			}
+
+			if (MinScale.HasValue)
+			{
+				Scale = Math.Max(Scale, MinScale.Value);
+			}
+
+			PrevScale = Scale;
 		}
 
 		/// <summary>
