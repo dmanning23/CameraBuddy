@@ -10,13 +10,6 @@ namespace CameraBuddy
 		#region Fields
 
 		/// <summary>
-		/// the amount to zoom during a camera shake
-		/// this is a number between 0.0 and 1.0
-		/// smaller = more shake
-		/// </summary>
-		private const float CAMERA_SHAKE_ZOOM = 0.02f;
-
-		/// <summary>
 		/// the amount to multiply the rotation of during the shake
 		/// </summary>
 		private const float CAMERA_SHAKE_ROTATE = 25.0f;
@@ -25,8 +18,6 @@ namespace CameraBuddy
 		/// how fast the camera can pan
 		/// </summary>
 		private const float CAMERA_SPEED = 10.0f;
-
-		private const float SCALE_SPEED = 20.0f;
 
 		#endregion //Fields
 
@@ -74,16 +65,6 @@ namespace CameraBuddy
 		}
 
 		/// <summary>
-		/// The amount to scale the rendering
-		/// </summary>
-		public float Scale { get; set; }
-
-		/// <summary>
-		/// the previous value of Scale
-		/// </summary>
-		private float PrevScale { get; set; }
-
-		/// <summary>
 		/// The boundary we don't want the camera to leave!
 		/// </summary>
 		/// <value>The world.</value>
@@ -112,14 +93,6 @@ namespace CameraBuddy
 		public float Top { get; private set; }
 		public float Bottom { get; private set; }
 
-		private float ShakeZoom
-		{
-			get
-			{
-				return CAMERA_SHAKE_ZOOM * ShakeAmount;
-			}
-		}
-
 		private float ShakeRotate
 		{
 			get
@@ -136,8 +109,7 @@ namespace CameraBuddy
 		public float TopPadding { get; set; }
 		public float BottomPadding { get; set; }
 
-		public float? MinScale { get; set; }
-		public float? MaxScale { get; set; }
+		public Scaler Scaler { get; private set; }
 
 		#endregion //Properties
 
@@ -148,8 +120,8 @@ namespace CameraBuddy
 		/// </summary>
 		public Camera()
 		{
-			Scale = 1.0f;
-			PrevScale = 1.0f;
+			Scaler = new Scaler();
+
 			Origin = Vector2.Zero;
 
 			PrevLeft = 0.0f;
@@ -234,12 +206,12 @@ namespace CameraBuddy
 			MoveToViewport(forceToViewport);
 
 			//setup the scale matrix
-			var scaleMatrix = Matrix.CreateScale(Scale);
+			var scaleMatrix = Matrix.CreateScale(Scaler.Scale);
 
 			//Get the translation vectors
 			var translationVect = new Vector2(
-				(Resolution.TitleSafeArea.Width / 2f) - (Scale * Origin.X),
-				(Resolution.TitleSafeArea.Height / 2f) - (Scale * Origin.Y));
+				(Resolution.TitleSafeArea.Width / 2f) - (Scaler.Scale * Origin.X),
+				(Resolution.TitleSafeArea.Height / 2f) - (Scaler.Scale * Origin.Y));
 
 			//setup the translation matrix
 			TranslationMatrix = Matrix.CreateTranslation(translationVect.X, translationVect.Y, 0f);
@@ -487,11 +459,11 @@ namespace CameraBuddy
 				newScale = Resolution.ScreenArea.Height / (Bottom - Top);
 			}
 
-			UpdateScale(forceToViewport, newScale);
+			Scaler.UpdateScale(forceToViewport, newScale, CameraClock);
 
 			//set teh camer position to be the center of the desired rectangle;
-			_origin.X = ((Left + Right) / 2.0f) - (Resolution.TitleSafeArea.Left / Scale);
-			_origin.Y = ((Top + Bottom) / 2.0f) - (Resolution.TitleSafeArea.Top / Scale);
+			_origin.X = ((Left + Right) / 2.0f) - (Resolution.TitleSafeArea.Left / Scaler.Scale);
+			_origin.Y = ((Top + Bottom) / 2.0f) - (Resolution.TitleSafeArea.Top / Scaler.Scale);
 
 			if (ShakeTimer.RemainingTime > 0.0f)
 			{
@@ -509,42 +481,8 @@ namespace CameraBuddy
 				multiply by a number 0 > 1 to increase amplitude of the camera rotate
 				*/
 
-				//figure how much camera shake to add to the zoom
-				var shakeZoom = ((Scale * ShakeZoom) *
-					(float)Math.Sin(
-					((ShakeTimer.CurrentTime * Math.PI) /
-					ShakeTimer.CountdownLength)));
-				Scale *= 1.0f + shakeZoom;
+				Scaler.AddShake(ShakeAmount, ShakeTimer);
 			}
-		}
-
-		/// <summary>
-		/// set the camera scale
-		/// </summary>
-		/// <param name="forceToViewport"></param>
-		/// <param name="newScale"></param>
-		private void UpdateScale(bool forceToViewport, float newScale)
-		{
-			if (forceToViewport)
-			{
-				Scale = newScale;
-			}
-			else
-			{
-				Scale += (((newScale - PrevScale) * SCALE_SPEED) * CameraClock.TimeDelta);
-			}
-
-			if (MaxScale.HasValue)
-			{
-				Scale = Math.Min(Scale, MaxScale.Value);
-			}
-
-			if (MinScale.HasValue)
-			{
-				Scale = Math.Max(Scale, MinScale.Value);
-			}
-
-			PrevScale = Scale;
 		}
 
 		/// <summary>
