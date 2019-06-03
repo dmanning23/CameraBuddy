@@ -6,35 +6,24 @@ namespace CameraBuddy
 	/// <summary>
 	/// This object is for managing the scale of the camera
 	/// </summary>
-	public class Scaler
+	public class Scaler : IScaler
 	{
 		#region Properties
 
-		/// <summary>
-		/// How fast to zoom in/out
-		/// </summary>
 		public float ScaleSpeed { get; set; }
 
-		/// <summary>
-		/// the amount to zoom during a camera shake
-		/// this is a number between 0.0 and 1.0
-		/// smaller = more shake
-		/// </summary>
 		public float ShakeZoom { get; set; }
 
 		private float _scale;
-		/// <summary>
-		/// The amount to scale the rendering
-		/// </summary>
 		public float Scale
 		{
 			get
 			{
 				return _scale;
 			}
-			set
+			protected set
 			{
-				_scale = UpdateWithMinMax(value);
+				_scale = UpdateWithMinMax(value, MinAutoScale, MaxAutoScale);
 			}
 		}
 
@@ -43,31 +32,39 @@ namespace CameraBuddy
 		/// </summary>
 		protected float PrevScale { get; set; }
 
-		/// <summary>
-		/// The Lowest possible scale (how far to zoom in)
-		/// </summary>
-		public float? MinScale { get; set; }
+		public float? MinAutoScale { get; set; }
 
-		/// <summary>
-		/// The highest possible scale (how far to zoom out)
-		/// </summary>
-		public float? MaxScale { get; set; }
+		public float? MaxAutoScale { get; set; }
 
-		public bool UseDesiredScale { get; set; }
+		public float? MinManualScale { get; set; }
 
-		private float _desiredScale;
-		/// <summary>
-		/// Manually set the current scale of the camera
-		/// </summary>
-		public float DesiredScale
+		public float? MaxManualScale { get; set; }
+
+		private bool _useManualScale;
+		public bool UseManualScale
+		{
+			get => _useManualScale;
+			set
+			{
+				_useManualScale = value;
+				if (!UseManualScale)
+				{
+					_manualScale = Scale;
+				}
+			}
+		}
+
+		private float _manualScale;
+		public float ManualScale
 		{
 			get
 			{
-				return _desiredScale;
+				return _manualScale;
 			}
 			set
 			{
-				_desiredScale = UpdateWithMinMax(value);
+				_useManualScale = true;
+				_manualScale = UpdateWithMinMax(value, MinManualScale, MaxManualScale);
 			}
 		}
 
@@ -82,27 +79,26 @@ namespace CameraBuddy
 
 			Scale = 1f;
 			PrevScale = 1f;
-			DesiredScale = 1f;
-			UseDesiredScale = false;
+			UseManualScale = false;
 		}
 
-		private float UpdateWithMinMax(float value)
+		protected float UpdateWithMinMax(float value, float? min, float? max)
 		{
-			if (!MaxScale.HasValue && !MinScale.HasValue)
+			if (!max.HasValue && !min.HasValue)
 			{
 				return value;
 			}
-			else if (MaxScale.HasValue && MinScale.HasValue)
+			else if (max.HasValue && min.HasValue)
 			{
-				return Math.Max(Math.Min(value, MaxScale.Value), MinScale.Value);
+				return Math.Max(Math.Min(value, max.Value), min.Value);
 			}
-			else if (MaxScale.HasValue)
+			else if (max.HasValue)
 			{
-				return Math.Min(value, MaxScale.Value);
+				return Math.Min(value, max.Value);
 			}
-			else if (MinScale.HasValue)
+			else if (min.HasValue)
 			{
-				return Math.Max(value, MinScale.Value);
+				return Math.Max(value, min.Value);
 			}
 
 			return value;
@@ -119,18 +115,18 @@ namespace CameraBuddy
 			{
 				Scale = newScale;
 			}
-			else if (UseDesiredScale)
+			else if (UseManualScale)
 			{
-				Scale += (((DesiredScale - PrevScale) * ScaleSpeed) * clock.TimeDelta);
+				_scale += (((ManualScale - PrevScale) * ScaleSpeed) * clock.TimeDelta);
 			}
 			else
 			{
 				Scale += (((newScale - PrevScale) * ScaleSpeed) * clock.TimeDelta);
 			}
 
-			if (!UseDesiredScale || forceToViewport)
+			if (!UseManualScale || forceToViewport)
 			{
-				DesiredScale = Scale;
+				_manualScale = Scale;
 			}
 
 			PrevScale = Scale;

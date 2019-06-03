@@ -10,6 +10,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ICamera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IPanner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IScaler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scaler.cs" />
   </ItemGroup>
 </Project>

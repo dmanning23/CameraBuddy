@@ -112,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CameraTests.cs" />
+    <Compile Include="PannerTests.cs" />
     <Compile Include="ScalerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
