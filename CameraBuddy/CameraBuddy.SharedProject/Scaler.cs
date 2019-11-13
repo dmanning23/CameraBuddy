@@ -65,6 +65,8 @@ namespace CameraBuddy
 			{
 				_useManualScale = true;
 				_manualScale = UpdateWithMinMax(value, MinManualScale, MaxManualScale);
+				PrevScale = _manualScale;
+				_scale = _manualScale;
 			}
 		}
 
@@ -124,10 +126,11 @@ namespace CameraBuddy
 				Scale += (((newScale - PrevScale) * ScaleSpeed) * clock.TimeDelta);
 			}
 
-			if (!UseManualScale || forceToViewport)
-			{
-				_manualScale = Scale;
-			}
+			//I don't remember why this code is here?
+			//if (!UseManualScale || forceToViewport)
+			//{
+			//	_manualScale = Scale;
+			//}
 
 			PrevScale = Scale;
 		}

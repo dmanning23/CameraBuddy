@@ -6,7 +6,7 @@
     "MonoGame.Framework.WindowsUniversal": "3.7.1.189",
     "RandomExtensions.dmanning23": "2.0.0",
     "ResolutionBuddy": "2.0.1",
-    "Vector2Extensions": "2.0.1"
+    "Vector2Extensions": "2.0.2"
   },
   "frameworks": {
     "uap10.0.10586": {}
