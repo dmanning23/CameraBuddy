@@ -23,7 +23,7 @@ namespace CameraBuddy
 			}
 			protected set
 			{
-				_scale = UpdateWithMinMax(value, MinAutoScale, MaxAutoScale);
+				_scale = value; //UpdateWithMinMax(value, MinAutoScale, MaxAutoScale);
 			}
 		}
 
@@ -65,8 +65,8 @@ namespace CameraBuddy
 			{
 				_useManualScale = true;
 				_manualScale = UpdateWithMinMax(value, MinManualScale, MaxManualScale);
-				PrevScale = _manualScale;
-				_scale = _manualScale;
+				//PrevScale = _manualScale;
+				//_scale = _manualScale;
 			}
 		}
 
