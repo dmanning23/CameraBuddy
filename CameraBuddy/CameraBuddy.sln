@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{30C30AAE-F0B3-4272-90DD-46B1DA0706C3}"
 	ProjectSection(SolutionItems) = preProject
 		buildNugetPackages.ps1 = buildNugetPackages.ps1
+		CameraBuddy.Bridge.nuspec = CameraBuddy.Bridge.nuspec
 		CameraBuddy.nuspec = CameraBuddy.nuspec
 	EndProjectSection
 EndProject
@@ -19,11 +20,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CameraBuddy.Tests", "Camera
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CameraBuddy.WindowsDX", "CameraBuddy.WindowsDX\CameraBuddy.WindowsDX.csproj", "{920359FF-B1EA-416B-A906-8F4CF8B68DF9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CameraBuddy.Bridge", "CameraBuddy.Bridge\CameraBuddy.Bridge.csproj", "{B5334393-7D1E-42FF-AAEE-409724F2B202}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		CameraBuddy.SharedProject\CameraBuddy.SharedProject.projitems*{2d46c240-d389-4572-84db-7c9115f0f6b8}*SharedItemsImports = 4
 		CameraBuddy.SharedProject\CameraBuddy.SharedProject.projitems*{3e9be45a-7fe5-4fd0-8af9-772817555c95}*SharedItemsImports = 13
 		CameraBuddy.SharedProject\CameraBuddy.SharedProject.projitems*{920359ff-b1ea-416b-a906-8f4cf8b68df9}*SharedItemsImports = 4
+		CameraBuddy.SharedProject\CameraBuddy.SharedProject.projitems*{b5334393-7d1e-42ff-aaee-409724f2b202}*SharedItemsImports = 4
 		CameraBuddy.SharedProject\CameraBuddy.SharedProject.projitems*{d77420ec-d2e7-4b18-9c3d-1f99423ba9b8}*SharedItemsImports = 4
 		CameraBuddy.SharedProject\CameraBuddy.SharedProject.projitems*{f0abec97-3bcc-4e82-b07c-09f573cd02a3}*SharedItemsImports = 4
 	EndGlobalSection
@@ -138,6 +142,30 @@ Global
 		{920359FF-B1EA-416B-A906-8F4CF8B68DF9}.Release|x64.Build.0 = Release|Any CPU
 		{920359FF-B1EA-416B-A906-8F4CF8B68DF9}.Release|x86.ActiveCfg = Release|Any CPU
 		{920359FF-B1EA-416B-A906-8F4CF8B68DF9}.Release|x86.Build.0 = Release|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.AppStore|ARM.ActiveCfg = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.AppStore|ARM.Build.0 = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.AppStore|x64.ActiveCfg = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.AppStore|x64.Build.0 = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.AppStore|x86.ActiveCfg = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.AppStore|x86.Build.0 = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Debug|ARM.Build.0 = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Debug|x64.Build.0 = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Debug|x86.Build.0 = Debug|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Release|ARM.ActiveCfg = Release|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Release|ARM.Build.0 = Release|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Release|x64.ActiveCfg = Release|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Release|x64.Build.0 = Release|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Release|x86.ActiveCfg = Release|Any CPU
+		{B5334393-7D1E-42FF-AAEE-409724F2B202}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
