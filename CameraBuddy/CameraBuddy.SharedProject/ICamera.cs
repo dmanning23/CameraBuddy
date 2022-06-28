@@ -39,6 +39,10 @@ namespace CameraBuddy
 
 		void AddCameraShake(float timeDelta, float amount = 1.0f);
 
+		void AddCameraShake(float length, float delta, float amount);
+
+		void StopCameraShake();
+
 		/// <summary>
 		/// Forces to screen.  Same as doing BeginScene(true)
 		/// </summary>

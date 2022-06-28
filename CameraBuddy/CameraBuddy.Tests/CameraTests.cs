@@ -13,11 +13,11 @@ namespace CameraBuddy.Tests
 		{
 			get
 			{
-				return ShakeLeft;
+				return Shaker.ShakeLeft;
 			}
 			set
 			{
-				ShakeLeft = value;
+				Shaker.ShakeLeft = value;
 			}
 		}
 
@@ -25,7 +25,7 @@ namespace CameraBuddy.Tests
 		{
 			get
 			{
-				return ShakeTimer;
+				return Shaker.ShakeTimer;
 			}
 		}
 
@@ -33,7 +33,7 @@ namespace CameraBuddy.Tests
 		{
 			get
 			{
-				return ShakeAmount;
+				return Shaker.ShakeAmount;
 			}
 		}
 	}

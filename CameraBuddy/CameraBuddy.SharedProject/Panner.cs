@@ -5,7 +5,7 @@ using System;
 
 namespace CameraBuddy
 {
-	public class Panner
+	public class Panner : IPanner
 	{
 		#region Properties
 

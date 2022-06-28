@@ -32,7 +32,7 @@ namespace CameraBuddySample
 		/// <summary>
 		/// The camera we are going to use!
 		/// </summary>
-		Camera _camera;
+		ICamera _camera;
 
 		#endregion //Members
 
@@ -143,6 +143,18 @@ namespace CameraBuddySample
 			if (_inputWrapper.Controller.CheckKeystroke(EKeystroke.A))
 			{
 				_camera.AddCameraShake(0.5f);
+			}
+			else if (_inputWrapper.Controller.CheckKeystroke(EKeystroke.B))
+			{
+				_camera.AddCameraShake(2.0f, 0.1f, 0.1f);
+			}
+			else if (_inputWrapper.Controller.CheckKeystroke(EKeystroke.Y))
+			{
+				_camera.AddCameraShake(0f, 0.2f, 0.05f);
+			}
+			else if (_inputWrapper.Controller.CheckKeystroke(EKeystroke.X))
+			{
+				_camera.StopCameraShake();
 			}
 
 			//update the camera

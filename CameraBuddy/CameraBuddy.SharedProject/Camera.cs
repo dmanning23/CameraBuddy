@@ -15,26 +15,13 @@ namespace CameraBuddy
 		protected bool CameraReset { get; set; }
 
 		/// <summary>
-		/// this is whether to shake the camera left or right
-		/// </summary>
-		protected bool ShakeLeft { get; set; }
-
-		/// <summary>
 		/// Clock used for camera movement and timing
 		/// </summary>
 		protected GameClock CameraClock { get; set; }
 
-		/// <summary>
-		/// This is the time the camera started shaking
-		/// </summary>
-		protected CountdownTimer ShakeTimer { get; set; }
-
-		/// <summary>
-		/// How hard to shake the camera.  1.0f for normal amount
-		/// </summary>
-		protected float ShakeAmount { get; set; }
-
 		public Matrix TranslationMatrix { get; private set; }
+
+		protected Shaker Shaker { get; set; }
 
 		protected Scaler Scaler { get; set; }
 
@@ -73,13 +60,10 @@ namespace CameraBuddy
 		{
 			Scaler = new Scaler();
 			Panner = new Panner();
+			Shaker = new Shaker();
 
-			ShakeLeft = true;
 			CameraReset = true;
 			CameraClock = new GameClock();
-			ShakeTimer = new CountdownTimer();
-
-			ShakeAmount = 1.0f;
 
 			TranslationMatrix = Matrix.Identity;
 		}
@@ -88,7 +72,7 @@ namespace CameraBuddy
 		{
 			CameraReset = true;
 			CameraClock.Update(clock);
-			ShakeTimer.Update(CameraClock);
+			Shaker.Update(CameraClock);
 		}
 
 		public void AddPoint(Vector2 point)
@@ -126,7 +110,7 @@ namespace CameraBuddy
 			Panner.MoveToViewport(forceToViewport, CameraClock);
 
 			//add the camera spin
-			Panner.AddShake(ShakeAmount, ShakeLeft, ShakeTimer);
+			Panner.AddShake(Shaker.ShakeAmount, Shaker.ShakeLeft, Shaker.ShakeTimer);
 
 			//Constrain the camera to stay in teh game world... or dont.
 			var newScale = Panner.Constrain();
@@ -136,7 +120,7 @@ namespace CameraBuddy
 			//set teh camer position to be the center of the desired rectangle;
 			Panner.UpdateCenter(Scaler.Scale);
 
-			if (ShakeTimer.RemainingTime > 0.0f)
+			if (Shaker.ShakeTimer.RemainingTime > 0.0f)
 			{
 				/*
 				okay the formula for camera shake rotation:
@@ -152,28 +136,23 @@ namespace CameraBuddy
 				multiply by a number 0 > 1 to increase amplitude of the camera rotate
 				*/
 
-				Scaler.AddShake(ShakeAmount, ShakeTimer);
+				Scaler.AddShake(Shaker.ShakeAmount, Shaker.ShakeTimer);
 			}
 		}
 
-		public void AddCameraShake(float timeDelta, float amount = 1.0f)
+		public void AddCameraShake(float length, float amount = 1f)
 		{
-			ShakeLeft = !ShakeLeft;
+			Shaker.AddShake(length, length, amount);
+		}
 
-			if (ShakeTimer.HasTimeRemaining)
-			{
-				ShakeAmount = Math.Max(ShakeAmount, amount);
+		public void AddCameraShake(float length, float delta, float amount)
+		{
+			Shaker.AddShake(length, delta, amount);
+		}
 
-				if (ShakeTimer.RemainingTime < timeDelta)
-				{
-					ShakeTimer.Start(timeDelta);
-				}
-			}
-			else
-			{
-				ShakeAmount = amount;
-				ShakeTimer.Start(timeDelta);
-			}
+		public void StopCameraShake()
+		{
+			Shaker.StopShake();
 		}
 
 		public void ForceToScreen()
