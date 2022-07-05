@@ -89,8 +89,11 @@ namespace CameraBuddySample
 			// Create a new SpriteBatch, which can be used to draw textures.
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 
-			//Setup all the rectangles used by the camera
-			//_camera.SetScreenRects(graphics.GraphicsDevice.Viewport.Bounds, graphics.GraphicsDevice.Viewport.TitleSafeArea);
+			//Before the game starts, add all the points to the camera
+			AddToCamera();
+
+			//Force the camera to the screen. This will start the camera in the correct spot instead of it doing a quick zoom to the circles.
+			_camera.ForceToScreen();
 		}
 
 		/// <summary>
@@ -171,9 +174,7 @@ namespace CameraBuddySample
 		{
 			GraphicsDevice.Clear(Color.CornflowerBlue);
 
-			//Add all our points to the camera
-			AddCircleToCamera(_circle1);
-			AddCircleToCamera(_circle2);
+			AddToCamera();
 
 			//update all the matrices of the camera before we start drawing
 			_camera.BeginScene(false);
@@ -194,6 +195,13 @@ namespace CameraBuddySample
 			spriteBatch.End();
 
 			base.Draw(gameTime);
+		}
+
+		private void AddToCamera()
+		{
+			//Add all our points to the camera
+			AddCircleToCamera(_circle1);
+			AddCircleToCamera(_circle2);
 		}
 
 		private void AddCircleToCamera(Circle circle)
